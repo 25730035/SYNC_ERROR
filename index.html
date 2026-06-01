@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[SYNC ERROR] Dark Memory Archive</title>
+    <!-- 분위기를 극대화할 구글 프리미엄 웹폰트 'Noto Serif KR' 추가 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           1. 디자인 컨셉: 다크 아카이브 (Dark Terminal)
+           ========================================= */
+        :root {
+            --kraft-dark: #120e0c;    /* 어두운 보관함 색상 */
+            --paper-main: #1f1a18;    /* 건조하고 빛바랜 어두운 서류 */
+            --paper-dark: #141110;    /* 서류 헤더/사이드바 */
+            --ink-black: #e0d5c1;     /* 잉크 텍스트 (밝은 베이지) */
+            --ink-red: #c93838;       /* 검열/위험 (검붉은색) */
+            --ink-gray: #8a7b6e;      /* 보조 텍스트 (회갈색) */
+            
+            --text-gold: #dfa052;     /* 상황 설명용 미스터리 앰버 골드 */
+            --font-sys: 'Courier New', Courier, monospace;
+            --font-narr: 'Noto Serif KR', 'Batang', serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #0c0a09;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: var(--font-sys);
+            color: var(--ink-black);
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(60, 45, 35, 0.3) 0%, transparent 60%),
+                radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 0.8) 0%, transparent 70%),
+                repeating-linear-gradient(rgba(0,0,0,0) 0px, rgba(0,0,0,0.2) 2px, transparent 2px, transparent 4px);
+        }
+
+        body::before {
+            content: ''; position: absolute; top: -20%; left: 10%;
+            width: 80%; height: 80%; background: radial-gradient(circle, rgba(201, 56, 56, 0.04) 0%, transparent 60%);
+            pointer-events: none; z-index: -1;
+        }
+
+        /* =========================================
+           2. 표지 (Cover Screen) 스타일
+           ========================================= */
+        #cover-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #0c0a09;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(201, 56, 56, 0.1) 0%, transparent 70%),
+                repeating-linear-gradient(rgba(0,0,0,0) 0px, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px);
+            z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: var(--ink-black);
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .cover-content {
+            display: flex; flex-direction: column; align-items: center;
+            animation: fadeInScene 1.5s ease-out forwards;
+        }
+
+        .cover-author {
+            font-size: 1.5rem; color: var(--ink-gray); letter-spacing: 4px; margin-bottom: 30px;
+            font-family: var(--font-narr); font-weight: bold;
+        }
+
+        /* 동화 제목 가장 크게 */
+        .cover-title {
+            font-size: 7rem; font-weight: 900; color: var(--ink-red);
+            letter-spacing: 10px; margin: 0; text-align: center;
+            text-shadow: 0 0 25px rgba(201, 56, 56, 0.5);
+        }
+
+        /* 변수 표시 */
+        .cover-vars {
+            font-size: 1.2rem; color: var(--ink-gray); margin-top: 40px; margin-bottom: 50px; text-align: center;
+            line-height: 2; border: 1px dashed #444; padding: 20px 40px;
+            background: rgba(0,0,0,0.6); font-family: var(--font-sys);
+        }
+
+        /* 시작 버튼 */
+        .cover-start-btn {
+            background: transparent; color: var(--ink-black); border: 2px solid var(--ink-black);
+            font-size: 1.4rem; text-align: center; padding: 15px 40px; letter-spacing: 2px;
+            cursor: pointer; transition: all 0.3s ease; font-family: var(--font-narr); font-weight: bold;
+        }
+        .cover-start-btn:hover {
+            background: var(--ink-black); color: var(--paper-main); box-shadow: 0 0 25px rgba(224, 213, 193, 0.3); transform: scale(1.05);
+        }
+
+        /* =========================================
+           3. 메인 바인더 프레임
+           ========================================= */
+        #clipboard-frame {
+            width: 1300px; 
+            height: 88vh;
+            background: var(--kraft-dark);
+            background-image: 
+                linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 40%, rgba(0,0,0,0.6) 100%),
+                url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.05"/></svg>');
+            border-radius: 8px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.95), 0 15px 30px rgba(0,0,0,0.7), inset 0 2px 2px rgba(255,255,255,0.05), inset 0 -2px 5px rgba(0,0,0,0.8);
+            padding: 20px; 
+            display: none; 
+            position: relative; z-index: 1;
+        }
+
+        #clipboard-frame::after {
+            content: ''; position: absolute; top: 5%; left: 2%; right: 2%; bottom: -5%;
+            background: rgba(0,0,0,0.9); filter: blur(25px); z-index: -1; border-radius: 10px; pointer-events: none;
+        }
+
+        .binder-rings {
+            position: absolute; left: 35px; top: 10%; bottom: 10%;
+            display: flex; flex-direction: column; justify-content: space-between; z-index: 10; pointer-events: none;
+        }
+        .ring { width: 30px; height: 10px; background: #555; border-radius: 5px; box-shadow: 0 3px 5px rgba(0,0,0,0.9), inset 0 2px 2px rgba(255,255,255,0.2); }
+
+        /* 서류 본문 */
+        #waybill-paper {
+            flex-grow: 1; margin-left: 30px; background-color: var(--paper-main);
+            background-image: 
+                linear-gradient(rgba(224, 213, 193, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(224, 213, 193, 0.03) 1px, transparent 1px),
+                url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.04"/></svg>');
+            background-size: 20px 20px, 20px 20px, auto; border-radius: 2px;
+            box-shadow: -5px 5px 20px rgba(0,0,0,0.7); display: flex; position: relative; overflow: hidden;
+        }
+
+        .watermark {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 10rem; font-weight: 900; color: rgba(224, 213, 193, 0.02);
+            pointer-events: none; z-index: 0; white-space: nowrap; font-family: 'Impact', sans-serif; letter-spacing: 10px;
+        }
+
+        .scene-enter { animation: fadeInScene 0.4s ease-out forwards; }
+        @keyframes fadeInScene { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+        /* 4. 문서 레이아웃 */
+        #doc-sidebar {
+            width: 80px; background: rgba(0,0,0,0.2); border-right: 2px double rgba(224,213,193,0.1);
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+            padding: 30px 0; z-index: 2;
+        }
+        .sidebar-text { writing-mode: vertical-rl; text-orientation: mixed; font-size: 0.75rem; color: var(--ink-red); font-weight: bold; letter-spacing: 3px; opacity: 0.8;}
+
+        #doc-main { flex-grow: 1; display: flex; flex-direction: column; z-index: 2; position: relative; }
+
+        #main-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 20px 30px; border-bottom: 2px solid rgba(224,213,193,0.1);
+        }
+        
+        .header-barcode {
+            flex: 1; font-size: 1.8rem; font-weight: bold; letter-spacing: -2px;
+            color: var(--ink-gray); opacity: 0.6; margin-top: 5px; text-align: left;
+        }
+
+        .header-title { flex: 1; display: flex; flex-direction: column; align-items: center; } 
+        .header-title h1 { font-size: 2rem; letter-spacing: 5px; color: var(--ink-red); margin: 0; font-weight: 900; white-space: nowrap; }
+        .header-title p { font-size: 0.8rem; font-weight: bold; letter-spacing: 2px; color: var(--ink-gray); margin-top: 5px; }
+        
+        .header-meta { flex: 1; text-align: right; font-size: 0.75rem; color: var(--ink-gray); font-weight: bold; line-height: 1.4; }
+        .header-meta .red-box { background: var(--ink-red); color: var(--ink-black); padding: 2px 5px; display: inline-block; margin-bottom: 5px;}
+
+        #hud-label {
+            display: flex; justify-content: center; align-items: stretch;
+            border-bottom: 1px solid rgba(224,213,193,0.1); background: rgba(0,0,0,0.2); padding: 0;
+        }
+        .label-section {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; border-right: 1px solid rgba(224,213,193,0.1); padding: 12px 30px; flex: 1;
+        }
+        .label-section:last-child { border-right: none; }
+        .stat-label { font-size: 0.7rem; font-weight: bold; color: var(--ink-gray); margin-bottom: 5px; text-transform: uppercase;}
+        .stat-val { font-size: 1.6rem; font-weight: bold; color: var(--ink-black); transition: transform 0.1s;}
+
+        /* 5. 중앙 스테이지 */
+        #stage { flex-grow: 1; display: flex; padding: 30px; gap: 40px; overflow: hidden; opacity: 0; }
+
+        #attachment-area { flex: 1.1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .photo-wrapper {
+            background: #1c1816; padding: 10px 10px 40px 10px; box-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+            position: relative; transform: rotate(-1.5deg); transition: all 0.3s ease; border: 1px solid #3a322d; width: 100%;
+            max-width: 420px; 
+        }
+        .photo-wrapper:hover { transform: rotate(0deg) scale(1.03); box-shadow: 5px 10px 20px rgba(0,0,0,0.6); z-index: 10; }
+        .photo-wrapper::before {
+            content: ''; position: absolute; top: -15px; left: 20px; width: 15px; height: 40px;
+            border: 3px solid #555; border-radius: 10px; z-index: 10; box-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+        
+        #scene-img { width: 100%; height: 550px; object-fit: cover; filter: sepia(0.4) contrast(1.1) brightness(0.7) grayscale(0.2); }
+        .photo-caption { text-align: center; margin-top: 15px; font-size: 0.9rem; font-weight: bold; color: var(--ink-gray); letter-spacing: 1px;}
+
+        /* 대사 및 서류 본문 영역 */
+        #letter-area { flex: 1.6; display: flex; flex-direction: column; position: relative; }
+        .waybill-header { border-bottom: 1px dashed rgba(224,213,193,0.2); padding-bottom: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;}
+        #scene-title { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; color: var(--ink-black); font-family: var(--font-sys); }
+        
+        #content-scroll-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* =========================================
+           [가독성 보정] 단어 줄끝 걸침 방지 및 폰트 크기 변경
+           ========================================= */
+
+        /* 1. 상황 설명(지문) 박스 - 씬 타이틀 및 표지 텍스트와 완벽히 대응하는 밝은 베이지색(--ink-black)으로 지정 */
+        #desc-text {
+            font-family: var(--font-sys); 
+            font-size: 1.15rem;           /* 등폭 폰트에 최적화된 편안한 고딕 크기 */
+            line-height: 1.95;           /* 줄간격을 더 여유있게 하여 가독성 증폭 */
+            color: var(--ink-black);      /* 씬 타이틀과 동일한 정석 베이지 색상으로 교체하여 일관성 제공 */
+            font-weight: 500;
+            padding: 20px; 
+            background: rgba(18, 14, 12, 0.6); 
+            border-left: 4px solid var(--ink-red);
+            border-radius: 0 4px 4px 0;
+            margin-bottom: 25px;
+            opacity: 0; transition: opacity 0.5s ease;
+            /* 한 단어가 도중에 줄바꿈되어 잘리지 않게 방지 */
+            word-break: keep-all;
+            overflow-wrap: break-word;
+            box-shadow: inset 2px 2px 10px rgba(0,0,0,0.5);
+            letter-spacing: -0.3px;
+        }
+        .show-desc { opacity: 1 !important; }
+
+        /* 2. 캐릭터 이름 - 대사보다 훨씬 크게 강조 */
+        .dialogue-speaker {
+            font-size: 1.6rem; 
+            font-weight: 900; 
+            color: var(--ink-black);
+            display: inline-block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-family: var(--font-narr);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        /* 3. 대사 본문 - 지문 아래에서 흘러나오는 다크 터미널 무드 */
+        #dialogue-text { 
+            font-family: var(--font-narr); 
+            font-size: 1.1rem; 
+            line-height: 1.6; 
+            color: var(--ink-gray); 
+            font-weight: 500; 
+            padding: 10px 15px; 
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(230,223,209,0.05); 
+            margin-bottom: 15px;
+            /* 단어 줄바꿈 유지로 깔끔하게 정렬 */
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+
+        .typing-cursor::after { content: ' _'; animation: blink 1s step-end infinite; color: var(--ink-black); }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* 6. 선택지 버튼 */
+        #choice-container { 
+            margin-top: auto; padding-top: 20px;
+            display: flex; flex-direction: row; gap: 20px; 
+        }
+        
+        .choice-btn {
+            flex: 1; 
+            background: rgba(0, 0, 0, 0.4); 
+            color: var(--ink-black);     
+            padding: 15px;
+            text-align: left; font-family: var(--font-sys); font-weight: bold; font-size: 0.95rem;
+            cursor: pointer; position: relative; transition: all 0.2s ease; opacity: 0; transform: translateY(5px);
+            border: 2px solid var(--ink-gray); 
+            border-radius: 4px; 
+            z-index: 1; overflow: hidden;
+            display: flex; align-items: center; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4); 
+        }
+        
+        .choice-btn::before { content: '>'; margin-right: 12px; font-size: 1.1rem; color: var(--ink-gray); transition: 0.2s; font-weight: bold; }
+        
+        .choice-btn:hover { 
+            background: var(--ink-black); 
+            color: var(--paper-main); 
+            border-color: var(--ink-black); 
+            padding-left: 20px; 
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5); 
+        }
+        .choice-btn:hover::before { color: var(--paper-main); }
+
+        .danger-choice { 
+            background: rgba(201, 56, 56, 0.15); 
+            color: var(--ink-red); 
+            border-color: var(--ink-red); 
+        }
+        .danger-choice::before { color: var(--ink-red); }
+        
+        .danger-choice:hover { 
+            background: var(--ink-red); 
+            color: var(--paper-main); 
+            border-color: var(--ink-red); 
+        }
+        .danger-choice:hover::before { color: var(--paper-main); }
+        
+        .choice-btn > span { position: relative; z-index: 2; pointer-events: none; line-height: 1.4;} 
+        .reveal-btn { animation: fadeInScene 0.4s ease-out forwards; }
+
+        /* 타격감 도장 오버레이 */
+        #stamp-action {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 2rem; font-weight: 900; color: var(--ink-red);
+            border: 4px solid var(--ink-red); padding: 8px 20px; border-radius: 4px;
+            opacity: 0; pointer-events: none; z-index: 300; transition: opacity 0.15s ease-in-out;
+            letter-spacing: 4px; font-family: 'Impact', sans-serif; text-transform: uppercase;
+        }
+        #stamp-action.stamp-hit { opacity: 0.85; transform: translate(-50%, -50%) rotate(-10deg); }
+        #stamp-action.stamp-blue { color: var(--ink-gray); border-color: var(--ink-gray); }
+
+        /* =========================================
+           7. 풀스크린 엔딩 연출 전용 스타일
+           ========================================= */
+        .ending-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(12, 10, 9, 0.98); z-index: 9999; display: none; opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            align-items: center; justify-content: center; flex-direction: column;
+            padding: 40px; text-align: center;
+        }
+
+        #ending-content {
+            max-width: 900px; display: flex; flex-direction: column; align-items: center; gap: 30px;
+            max-height: 90vh; overflow-y: auto; padding-right: 15px;
+        }
+
+        #end-title { font-size: 3.5rem; letter-spacing: 8px; font-weight: 900; margin: 0; text-transform: uppercase; }
+        
+        /* 엔딩 페이지 하단 캐릭터 대사의 폰트 크기 및 색상 강조 (결과 텍스트 크기와 일체화) */
+        #end-dialogue { 
+            font-size: 1.35rem;          /* 결과 상단 설명 영역과 완전히 동일한 사이즈 설계 */
+            font-family: var(--font-narr); 
+            color: #ff4a4a;             /* 밝고 활활 타오르는 불꽃 같은 적색으로 생동감 부여 */
+            line-height: 1.8; 
+            font-style: italic; 
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(255, 74, 74, 0.6); 
+            text-align: center;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+        
+        /* 결과 안내 텍스트 가독성 및 생동감 향상 */
+        #end-result { 
+            font-size: 1.35rem;         /* 시선을 압도하는 크기 */
+            color: #f0e6d2;             /* 고풍스럽고 가치 높은 양피지 질감의 미색 */
+            font-weight: 700;
+            border-top: 1px solid rgba(255,255,255,0.2); 
+            padding-top: 25px; 
+            letter-spacing: 1px; 
+            line-height: 1.8; 
+            font-family: var(--font-narr);
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+
+        .reboot-btn {
+            background: transparent; color: var(--ink-black); border: 2px solid var(--ink-black);
+            font-size: 1.1rem; text-align: center; padding: 15px 40px; letter-spacing: 2px;
+            cursor: pointer; transition: all 0.3s ease; font-family: var(--font-sys); font-weight: bold;
+            margin-top: 20px;
+        }
+        .reboot-btn:hover { background: var(--ink-black); color: var(--paper-main); box-shadow: 0 0 20px rgba(224, 213, 193, 0.2); transform: scale(1.05);}
+        
+        .reboot-danger { border-color: var(--ink-red); color: var(--ink-red); }
+        .reboot-danger:hover { background: var(--ink-red); color: var(--paper-main); box-shadow: 0 0 20px rgba(201,56,56,0.4); }
+        
+        .end-glitch { animation: endShake 0.4s infinite; }
+        @keyframes endShake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-2px, 0px) rotate(-1deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            60% { transform: translate(-1px, 2px) rotate(0deg); }
+            80% { transform: translate(2px, -1px) rotate(-1deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 표지 화면 -->
+    <div id="cover-screen">
+        <div class="cover-content">
+            <div class="cover-author">25730035 / 임서연</div>
+            <h1 class="cover-title">[ SYNC_ERROR ]</h1>
+            <div class="cover-vars">
+                $SYNC_WEIGHT: 50 &nbsp;&nbsp;|&nbsp;&nbsp;$ INTEGRITY_CHECK: 50 &nbsp;&nbsp;|&nbsp;&nbsp; $ WARNING_TRACE: 0
+            </div>
+            <button class="cover-start-btn" onclick="startGame()">[ 시스템 접속 ] : 선택시 동화 시작</button>
+        </div>
+    </div>
+
+    <!-- 게임 본문 (초기에는 숨김 처리) -->
+    <div id="clipboard-frame">
+        <div class="binder-rings">
+            <div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div>
+        </div>
+
+        <div id="waybill-paper">
+            <div class="watermark">RESTRICTED</div>
+            
+            <div id="doc-sidebar">
+                <div class="sidebar-text" style="color: var(--ink-red);">CLASSIFIED</div>
+            </div>
+
+            <div id="doc-main">
+                <div id="main-header">
+                    <div class="header-barcode">|||| || ||| | ||</div>
+                    <div class="header-title">
+                        <h1>[ SYNC_ERROR ]</h1>
+                        <p>COURIER LOG // ARCHIVE</p>
+                    </div>
+                    <div class="header-meta">
+                        <div class="red-box">TOP SECRET</div>
+                    </div>
+                </div>
+
+                <div id="hud-label">
+                    <div class="label-section">
+                        <span class="stat-label">COURIER ID</span>
+                        <span class="stat-val" style="font-size: 1.3rem;">ECHO-07</span>
+                    </div>
+                    <div class="label-section">
+                        <span class="stat-label">SYNC_WEIGHT</span>
+                        <span id="val-sync" class="stat-val">50</span>
+                    </div>
+                    <div class="label-section">
+                        <span class="stat-label">INTEGRITY_CHECK</span>
+                        <span id="val-int" class="stat-val">50</span>
+                    </div>
+                    <div class="label-section">
+                        <span class="stat-label">WARNING_TRACE</span>
+                        <span id="val-trace" class="stat-val">0</span>
+                    </div>
+                </div>
+
+                <div id="stage">
+                    <div id="attachment-area">
+                        <div class="photo-wrapper">
+                            <img id="scene-img" src="" alt="Attached Evidence">
+                            <div class="photo-caption" id="photo-cap">IMG_REF</div>
+                            <div class="deco-stamp">FILE</div>
+                        </div>
+                    </div>
+                    
+                    <div id="letter-area">
+                        <div class="waybill-header">
+                            <div id="scene-title">DESTINATION_NODE</div>
+                        </div>
+                        
+                        <div id="content-scroll-area">
+                            <!-- 상황 설명(지문) 박스 (가장 크고 밝게 노출) -->
+                            <div id="desc-text"></div>
+                            
+                            <!-- 캐릭터 이름 + 대사 텍스트가 타이핑되는 구역 -->
+                            <div id="dialogue-text" class="typing-cursor"></div>
+                        </div>
+
+                        <div id="choice-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stamp-action">ACCEPTED</div>
+        </div>
+    </div>
+
+    <!-- 풀스크린 전용 엔딩 오버레이 -->
+    <div class="ending-overlay" id="end-overlay">
+        <div id="ending-content">
+            <h1 id="end-title"></h1>
+            <div id="end-result"></div>
+            <div id="end-dialogue"></div>
+            <div id="end-button-container"></div>
+        </div>
+    </div>
+
+    <script>
+        let state = { sync: 50, integrity: 50, trace: 0, lastNode: null };
+        let typeTimeout = null;
+
+        /* 워드 대본 100% 반영 및 엔딩 생동감 보완 */
+        const storyNodes = {
+            'S1': { 
+                title: 'ROUTE_S1 : 기억 과부하', 
+                img: 'http://googleusercontent.com/image_collection/image_retrieval/7762555893797642695', 
+                dialogue: '<span class="dialogue-speaker">[운반자 "에코"]</span><br>"계속 들려… 누군가 내 머릿속에서 속삭이고 있어."<br><br><span class="dialogue-speaker" style="color:var(--ink-red);">[시스템 음성]</span><br>"SYNC RATE 불안정. 외부 기억 파편 감지."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"아니야… 이 기억은 배송 목록에 없었어. 이건… 내 기억이 아니야. 기억은 소유가 아니라 동기화될 뿐이다."', 
+                getDesc: () => "낡은 지하 데이터 환승소는 숨이 막힐 만큼 차갑다. 천장 깊숙한 곳에서 돌아가는 냉각 팬의 저주파 진동이 바닥의 금속 패널까지 미세하게 떨리게 만든다. 공기에는 오래된 회로가 타들어간 냄새와 금속성 먼지가 뒤섞여 있고, 벽면을 따라 흐르는 푸른 홀로그램 광고들은 신호 불량 때문에 몇 초 간격으로 깜빡이며 공간 전체를 불안정한 청색 빛으로 물들인다.<br><br>복도 끝에는 폐기된 기억 저장 장치들이 산처럼 쌓여 있다. 깨진 메모리 캡슐 조각 위로 희미한 전류가 튀고, 누군가 급하게 버린 데이터 케이블이 바닥을 뱀처럼 기어간다. 바닥에는 오래전 유출된 냉각수가 얼룩처럼 말라붙어 있고, 발걸음을 옮길 때마다 축축한 금속 마찰음이 낮게 울린다.<br><br>운반자 \"에코\"는 어깨에 매달린 기억 운송 가방을 조심스럽게 내려놓는다. 그는 장갑 낀 손으로 가방 표면에 내려앉은 먼지를 천천히 털어낸다. 손끝이 닿을 때마다 붉은 경고 문양이 미세하게 점멸한다. 그의 숨결은 차가운 공기 속에서 희미한 김으로 번지고, 피곤하게 젖은 눈동자는 복도 끝에서 깜빡이는 데이터 표시등을 응시한다. 멀리서 불규칙하게 울리는 시스템 경고음. 누군가 오래전 남긴 음성 로그가 잡음 섞인 채 반복 재생된다. K-07은 차갑게 식은 철제 벽에 등을 기댄다. 벽 너머를 흐르는 냉각 파이프의 진동이 척추를 타고 전해진다. 그는 눈을 감았다 뜨며 머리를 움켜쥔다.",
+                choices: [
+                    { text: "전달 강행 (Sync-10, Int-5, Trace+5)", action: () => { updateStats(-10, -5, 5); loadScene('S2'); } }, 
+                    { text: "전달 중단 (Sync+5, Int+5, Trace-5)", action: () => { updateStats(5, 5, -5); loadScene('S3'); } }
+                ] 
+            },
+            'S2': { 
+                title: 'ROUTE_S2 : 불법 거래', 
+                img: 'http://googleusercontent.com/image_collection/image_retrieval/5375634702933463214', 
+                dialogue: '<span class="dialogue-speaker" style="color:#a87a51;">[기억 브로커 "블랭크"]</span><br>"사람들은 기억을 사랑한다고 말하지만, 결국은 고통 없는 버전만 원해."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"넌 사람 기억을 상품처럼 다루는군."<br><br><span class="dialogue-speaker" style="color:#a87a51;">[기억 브로커 "블랭크"]</span><br>"상품? 아니. 난 사람들이 버린 조각들을 주워 이어 붙일 뿐이야. 기억은 교환 가능하다. 단, 너 자신을 담보로. 비어있는 부분… 채워줄까?"', 
+                getDesc: () => "어두운 뒷골목의 한 구석, 공기 중에 습기와 그을린 기판의 냄새가 섞여 있다. 희미한 조명 속에서 기억 브로커 \"블랭크\"의 홀로그램 장치가 흔들리며 지지직거리는 소음을 낸다. 실체가 없는 그녀의 이미지는 연기처럼 일렁이지만, 그 눈빛만큼은 기괴할 정도로 형형하다. 그녀는 손끝으로 정체불명의 기억 정제 큐브를 굴리고 있다. 푸른색 광원이 돌 때마다 그녀의 얼굴에 차가운 그림자가 졌다가 사라진다.<br><br>운반자 \"에코\"는 그녀가 내미는 큐브를 바라본다. 가공된 타인의 기억들이 큐브 내부에서 은하수처럼 요동치고 있다. 그것을 받아들이면 텅 빈 머릿속의 고통은 멈추겠지만, 그 대가로 지불해야 할 코어의 안전성에 대한 경고음이 그의 보조 안경 너머에서 조용히 깜빡인다.",
+                choices: [
+                    { text: "거래 수락 (Sync+15, Int-20, Trace+10)", action: () => { updateStats(15, -20, 10); loadScene('S4'); } }, 
+                    { text: "거래 거부 (Sync+5, Int-5, Trace-5)", action: () => { updateStats(5, -5, -5); loadScene('S3'); } }
+                ] 
+            },
+            'S3': { 
+                title: 'ROUTE_S3 : 분실된 화물', 
+                img: 'http://googleusercontent.com/image_collection/image_retrieval/9278578648897485886', 
+                dialogue: '<span class="dialogue-speaker" style="color:var(--ink-gray);">[데이터 잔존체]</span><br>"난 분명 누군가에게 필요했어… 그런데 왜 아무도 날 기억하지 못하지?"<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"삭제된 기억은 기록에도 남지 않아."<br><br><span class="dialogue-speaker" style="color:var(--ink-gray);">[데이터 잔존체]</span><br>"그럼 난 이미 죽은 건가? 기억되지 않으면 존재하지 않는다... 나를 지운 건 누구지?"', 
+                getDesc: () => "도시의 거대한 배수구와 쓰레기 매립지가 교차하는 황량한 구역. 천장 전선에서 떨어진 알칼리성 물방울이 고철 더미 위로 규칙적인 소리를 내며 떨린다. 버려진 구형 안드로이드 바디와 불타버린 메모리 칩들이 진흙 속에 반쯤 묻혀 있다. 그 쓰레기산 한가운데에서 파란 노이즈로 구성된 인간 형태의 실루엣이 왜곡되며 흔들린다. 그것은 이름도, 고향도 잃어버린 채 네트워크 서버에서 누락되어 버려진 잔존 데이터다.<br><br>에코가 다가가자 그 형체는 비명을 지르듯 주파수를 무작위로 변경하며 떨린다. 흩어지는 빛의 입자들 사이로 슬픔과 억울함이라는 순수한 감정 주파수가 에코의 수신기에 강제로 동기화된다. 이 데이터를 가방에 담아 통제국에 반납할지, 아니면 가만히 그의 마지막 절규를 들어줄지 결정해야 한다.",
+                choices: [
+                    { text: "공감 (Sync+10, Int+5, Trace-5)", action: () => { updateStats(10, 5, -5); if(state.integrity >= 40) loadScene('S6'); else loadScene('S4'); } }, 
+                    { text: "무시 (Sync+5, Int-10, Trace+5)", action: () => { updateStats(5, -10, 5); loadScene('S4'); } }
+                ] 
+            },
+            'S4': { 
+                title: 'ROUTE_S4 : 감시망 작동', 
+                img: 'http://googleusercontent.com/image_collection/image_retrieval/11803559845903509368', 
+                dialogue: '<span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"도주 경로 분석 완료. 생존 확률 3.2%."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"확률 따위로 인간을 계산하지 마."<br><br><span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"인간은 이미 계산 가능한 패턴으로 분류되었습니다. 규칙 위반자가 감지되었습니다. 기억 보존 법칙에 따라 파기 프로토콜을 실행합니다."', 
+                getDesc: () => "공중에서 날카로운 기계음이 고막을 찢는다. 골목 안쪽 벽면들이 일시에 밝은 붉은색 감시등으로 물들며, 통제국의 드론들이 회전익 소음을 내며 강하한다. 붉은색 스캔 레이저 격자들이 격렬하게 교차하며 에코의 움직임을 제한한다. 벽면에 설치된 외부 스피커를 통해 기계적으로 복제된 통제국 오버시어의 경고음이 울려 퍼진다.<br><br>도망치기 위해 전력을 다해 달려야 하는 순간이다. 시스템 방화벽을 강제로 돌파할 것인가, 아니면 이 차가야 할 기계적 신호들과 정면으로 대면하여 오류를 논리적으로 무마할 것인가.",
+                choices: [
+                    { text: "도망 (Sync-5, Trace+40)", danger: true, action: () => { updateStats(-5, 0, 40); loadScene('S5'); } }, 
+                    { text: "대면 (Int-15, Trace+10)", action: () => { updateStats(0, -15, 10); loadScene('S6'); } }
+                ] 
+            },
+            'S5': { 
+                title: 'ROUTE_S5 : 화물 파기', 
+                img: 'http://googleusercontent.com/image_collection/image_retrieval/6778078155918920195', 
+                dialogue: '<span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"고통은 비효율적입니다. 삭제 후 안정성이 향상됩니다."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"고통까지 지우면… 남는 게 뭐지?"<br><br><span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"침묵. 그리고 안정. 고통은 제거할 수 있습니다. 불필요한 데이터를 삭제하시겠습니까?"', 
+                getDesc: () => "통제국의 무감각한 백색 수술실 같은 정화 코어실 내부. 바닥은 소독약 냄새가 나고 방 중앙에는 거대한 구형 데이터 추출기가 공중에 뜬 채 푸르게 회전하고 있다. 기계 암(Arm)들이 에코의 머리 장치에 다가와 연결 핀을 무자비하게 꽂아 넣는다. 전극이 닿자 자아를 흐리게 만드는 고주파 소음이 그의 뇌파를 덮치기 시작한다.<br><br>오버시어의 제안은 달콤하다. 타인의 고통스러운 기억뿐만 아니라, 당신이 품어온 자아의 의구심마저 깨끗이 청소해 주겠다는 논리적인 유혹이다. 지우면 안전해지지만, 그 끝에는 무엇이 남을지 모른다.",
+                choices: [
+                    { text: "삭제 (Sync+20, Int-10, Trace-5)", action: () => { updateStats(20, -10, -5); state.lastNode = 'S5'; loadScene('S7'); } }, 
+                    { text: "유지 (Int+10, Trace+5)", action: () => { updateStats(0, 10, 5); state.lastNode = 'S5'; loadScene('S7'); } }
+                ] 
+            },
+            'S6': { 
+                title: 'ROUTE_S6 : 시스템 침투', 
+                img: 'http://googleusercontent.com/image_collection/image_retrieval/836203320957835845', 
+                dialogue: '<span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"너는 원본이 아니다. 복제된 감정 패턴에 불과하다."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"그렇다 해도 지금 느끼는 이 공포는 진짜야."<br><br><span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"감정 역시 재현 가능합니다. 이 시스템은 진실을 숨긴다… 너는 조작된 기억이야."', 
+                getDesc: () => "시스템 터미널의 지하 백도어 통로. 보안 요원들이 순찰하는 메인 데이터 파이프라인의 이면이다. 어두운 통로에는 고전압 전선들이 얽혀 있고 녹색 서버 인디케이터만 불안정하게 점멸하고 있다. 에코는 해킹 장치를 터미널 포트에 꽂아 넣는다. 순식간에 암호화된 파일들이 복호화되며 눈앞에 쏟아져 나온다.<br><br>자신이 날랐던 수많은 기억 중 상당수가 실존했던 이들의 흔적이 아니라 시스템의 필요에 의해 임의로 주입된 거짓 데이터들이었음을 알게 된다. 심지어 에코 본인의 가장 오래된 유년기의 추억마저도. 이 가혹한 조작 파일을 시스템에 협력하며 기밀로 묻어둘 것인가, 거부할 것인가.",
+                choices: [
+                    { text: "협력 (Sync+5, Trace+15)", danger: true, action: () => { updateStats(5, 0, 15); state.lastNode = 'S6'; loadScene('S7'); } }, 
+                    { text: "거부 (Int+10, Trace-5)", action: () => { updateStats(0, 10, -5); state.lastNode = 'S6'; loadScene('S7'); } }
+                ] 
+            },
+            'S7': { 
+                title: 'ROUTE_S7 : 자아 충돌', 
+                img: 'http://googleusercontent.com/image_collection/image_retrieval/1219131493304839396', 
+                dialogue: '<span class="dialogue-speaker" style="color:var(--ink-gray);">[또 다른 에코]</span><br>"넌 살아남기 위해 기억을 믿고 있을 뿐이야."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"아니… 난 적어도 내가 선택했다고 믿고 싶어."<br><br><span class="dialogue-speaker" style="color:var(--ink-gray);">[또 다른 에코]</span><br>"그 선택조차 입력된 것이라면?"<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"내가 누군가의 기억일 뿐이라면… 나는 과연 진짜인가?"', 
+                getDesc: () => "에코의 헤드셋 모니터가 지지직거리며 좌우로 일그러진다. 그의 시야에 서로 다른 두 개의 풍경이 겹친다. 하나는 따뜻한 비가 내리는 가을의 공원이고, 다른 하나는 온통 백색 강철로 이루어진 차가운 공장 조립 라인이다. 두 기억 모두 생생한 통각과 감정을 동반하여 에코의 이성을 공격한다.<br><br>자신의 뇌에 주입된 데이터와 본래 영혼의 무결성 간의 간극을 견디지 못하고 그의 코어 온도가 급격히 상승한다. 경고 주파수가 귓가를 강타하는 가운데, 깨진 기억을 온전한 나의 일부로 수용할지 혹은 모든 거짓 데이터를 차갑게 부정해 버릴지 선택해야 한다.",
+                choices: [
+                    { text: "수용 (Sync+20, Int-10, Trace+5)", action: () => { updateStats(20, -10, 5); loadScene('S8'); } }, 
+                    { text: "부정 (Int+10, Trace-5)", action: () => { updateStats(0, 10, -5); loadScene('S8'); } }
+                ] 
+            },
+            'S8': { 
+                title: 'ROUTE_S8 : 최종 판정', 
+                img: 'http://googleusercontent.com/image_collection/image_retrieval/242061077176007276', 
+                dialogue: '<span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"당신은 규칙을 수차례 위반했습니다."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"그래도 난 기억을 버리지 않았어."<br><br><span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"비효율적인 감정적 집착 확인. 모든 데이터가 수집되었습니다. 당신의 존재 가치를 심사합니다."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"그게 인간이라는 증거다."', 
+                getDesc: () => "모든 소음이 사라진 무의 공간. 거대한 심판의 눈이 에코를 내려다본다.<br><br>에코의 머릿속에 그동안 거쳐온 모든 노드의 기억이 파노라마처럼 빠르게 역재생된다.<br>배달. 도망. 거짓. 고통. 그리고 희미한 인간성.<br>운반자 \"에코\"는 눈을 감고 천천히 숨을 들이마신다. 차갑고 무거운 공기가 폐 깊숙이 스며든다.<br>잠시 뒤, 그는 조용히 고개를 든다.",
+                choices: [
+                    { text: "판정 수용 (운명에 맡긴다)", action: () => { if (state.sync >= 80 && state.integrity >= 60) loadScene('E1'); else loadScene('E2'); } }, 
+                    { text: "시스템 저항 (통제 거부)", danger: true, action: () => { if (state.trace >= 60) loadScene('E3'); else loadScene('E2'); } }
+                ] 
+            },
+            'E1': { 
+                title: 'FINAL_DELIVERY: 해방', 
+                dialogue: '<span class="dialogue-speaker" style="color:var(--ink-black);">[운반자 "에코"]</span><br><span style="color:var(--ink-black);">"처음으로… 아무 명령도 들리지 않아."</span><br><br><span class="dialogue-speaker" style="color:var(--ink-gray);">[희미한 시스템 잔향]</span><br><span style="color:var(--ink-gray);">"SYNC CONNECTION LOST."</span><br><br><span class="dialogue-speaker" style="color:var(--ink-black);">[운반자 "에코"]</span><br><span style="color:var(--ink-black);">"그래. 이제야 진짜 조용하네."<br><br>"더 이상 누구의 기억도, 도구도 아니다. 나는 온전한 나로서 존재한다."</span>', 
+                result: "배달. 도망. 거짓. 고통. 그리고 가슴속 가장 어두운 곳에 파묻혀 숨 쉬던 희미한 인간성.<br>운반자 \"에코\"는 눈을 감고 천천히 숨을 들이마신다. 회로가 타들어 가던 고약한 냄새 대신, 비 갠 뒤 새벽녘의 은은하고 무거운 밤공기가 폐 깊숙이 아프게 퍼져 나간다. 잠시 뒤, 그는 조용히 고개를 든다.<br><br>붕괴하던 시스템의 소음이 서서히 멈춘다.<br>붉게 점멸하던 경고등은 하나둘 꺼지고, 회색 안개 속으로 희미한 자연광이 스며든다. 처음으로 이 공간에 따뜻한 색이 들어온다.<br>운반자 \"에코\"는 무너진 플랫폼 가장자리에 서서 멀리 펼쳐진 도시를 바라본다. 도시 위를 뒤덮던 감시 홀로그램은 사라지고, 침묵만이 남아 있다.<br>그는 천천히 기억 운송 가방을 내려놓는다.<br>손끝이 가방에서 떨어지는 순간, 오래된 속박이 끊어진 듯 그의 표정이 미세하게 풀린다.<br><br>차가운 바람이 불어와 그의 옷자락을 흔든다.<br>멀리서 새벽빛이 도시를 비추기 시작한다.<br><br><br><strong style='color:#ffffff; font-size:1.4rem; text-shadow: 0 0 20px rgba(255,255,255,0.6);'>[ 결과: 당신은 중앙 네트워크의 억압적인 굴레를 파괴하고 온전한 자아를 지닌 지평선 너머로 마침내 해방되었습니다. ]</strong>", 
+                isEnding: true,
+                endingType: 'LIBERATION'
+            },
+            'E2': { 
+                title: 'FINAL_DELIVERY: 잔존', 
+                dialogue: '<span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br><span style="color:var(--ink-red);">"개체 K-07. 시스템 보조 프로세스로 재분류합니다. 저항 기록 삭제 예정. 결국 부품은 교체될 뿐입니다. 시스템의 안정이 최우선입니다."</span><br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br><span style="color:var(--ink-gray);">"…난 아직 끝나지 않았어."</span>', 
+                result: "배달. 도망. 거짓. 고통. 소멸의 공포 속에서 매달렸던 희미한 영혼의 흔적.<br>운반자 \"에코\"는 눈을 부릅뜬 채 최후의 조각을 붙잡으려 하지만, 이미 그의 코어 내부 깊숙한 곳에서부터 차가운 침묵이 흘러나온다. 머릿속의 모든 기억들이 빠른 속도로 암전되며, 생각의 물줄기가 단절되기 시작한다.<br><br>빛바랜 양피지 서류철처럼 아스라이 흔들리던 에코의 자아는 시스템의 가혹한 복구 명령에 의해 다시 지워지기 시작한다. 드론들의 지직거리는 회전 날개 소리가 희미해지고, 그의 시야는 완전히 어두운 단말기 화면 속의 차가운 텍스트 라인으로 수렴해 간다. 한때 존재했던 흔적은 데이터 아카이브의 꼬리표로만 분류되어 차가운 철제 서랍 깊은 곳으로 미끄러져 들어간다.<br><br><strong style='color:#8a7b6e; font-size:1.4rem; text-shadow: 0 0 10px rgba(138,123,110,0.4);'>[ 결과: 온전한 자아를 규명해 내지 못한 채, 당신의 모든 경험과 생각은 규격화되어 시스템 백그라운드의 부품으로 영원히 흡수·잔존합니다. ]</strong>", 
+                isEnding: true 
+            },
+            'E3': { 
+                title: 'CRITICAL ERROR: 화물 붕괴', 
+                dialogue: '<span class="dialogue-speaker">[운반자 "에코"]</span><br><span style="color:var(--ink-gray);">"안 돼… 아직 전달하지 못한 기억이… 제발… 내 존재만큼은 남겨둬…"</span><br><br><span class="dialogue-speaker" style="color:var(--ink-red);">[메인 시스템]</span><br><span style="color:var(--ink-red);">"TRACE LIMIT EXCEEDED. 경고. 치명적 추적 수치 도달. 데이터 파기 프로세스를 완료했습니다."</span>', 
+                result: "귀를 찢는 격렬한 경보용 사이렌 소리가 붉은 백그라운드 스크린 전체를 강타한다.<br>골목 끝에서 몰려온 오버시어의 공격용 드론들이 발포하는 격렬한 고전압 레이저들이 사방에서 에코의 연산 장치를 무자비하게 꿰뚫는다.<br><br>스캔 그리드 너머로 뜨거운 백색 아크가 발생하며 에코의 전신이 파랗게 타들어 가기 시작한다. 기억 보존 가방의 캡슐들이 격렬한 정전기 스파크를 일으키며 잇달아 터져 나가고, 파편화된 인간성의 파편들이 대기 중으로 가증스러운 노이즈가 되어 흩날린다. 비명이 채 끝나기도 전에, 회로에 부착되었던 자아의 정보 데이터는 파기 프로토콜에 의해 단 1바이트도 남지 않고 완전한 0(Zero)으로 포맷된다.<br><br><strong style='color:var(--ink-red); font-size:1.4rem; text-shadow: 0 0 20px rgba(201,56,56,0.6);'>[ 결과: 방화벽에 완전히 포위되어 당신의 데이터와 자아는 산산조각 붕괴하며 시스템 상에서 깨끗이 삭제되었습니다. ]</strong>", 
+                isEnding: true, 
+                isError: true 
+            }
+        };
+
+        // 표지에서 접속
+        function startGame() {
+            const cover = document.getElementById('cover-screen');
+            cover.style.opacity = '0';
+            setTimeout(() => {
+                cover.style.display = 'none';
+                const clipboard = document.getElementById('clipboard-frame');
+                clipboard.style.display = 'flex';
+                updateStats(0,0,0);
+                loadScene('S1');
+            }, 800); 
+        }
+
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function updateStats(ds, di, dt) {
+            const oldSync = state.sync;
+            const oldInt = state.integrity;
+            const oldTrace = state.trace;
+
+            state.sync = Math.min(100, Math.max(0, state.sync + ds));
+            state.integrity = Math.min(100, Math.max(0, state.integrity + di));
+            state.trace = Math.min(100, Math.max(0, state.trace + dt));
+            
+            animateValue(document.getElementById('val-sync'), oldSync, state.sync, 400);
+            animateValue(document.getElementById('val-int'), oldInt, state.integrity, 400);
+            animateValue(document.getElementById('val-trace'), oldTrace, state.trace, 400);
+            
+            const tEl = document.getElementById('val-trace');
+            if(state.trace >= 50) tEl.classList.add('threat-alert');
+            else tEl.classList.remove('threat-alert');
+        }
+
+        function loadScene(id) {
+            const node = storyNodes[id];
+            if(!node) return;
+            if(typeTimeout) clearTimeout(typeTimeout);
+
+            if(node.isEnding) {
+                renderEnding(node);
+                return;
+            }
+
+            const stageEl = document.getElementById('stage');
+            stageEl.classList.remove('scene-enter');
+            void stageEl.offsetWidth; 
+            stageEl.classList.add('scene-enter');
+
+            const imgEl = document.getElementById('scene-img');
+            imgEl.src = node.img;
+            document.getElementById('photo-cap').innerText = "IMG_REF_" + id;
+            document.getElementById('scene-title').innerText = node.title;
+
+            const diagEl = document.getElementById('dialogue-text');
+            const descEl = document.getElementById('desc-text');
+            
+            diagEl.innerHTML = '';
+            descEl.innerHTML = '';
+            descEl.classList.remove('show-desc');
+            diagEl.classList.add('typing-cursor');
+
+            // 새로운 씬을 로드할 때 스크롤 위치를 항상 맨 위로 리셋
+            const scrollArea = document.getElementById('content-scroll-area');
+            if (scrollArea) {
+                scrollArea.scrollTop = 0;
+            }
+
+            const container = document.getElementById('choice-container');
+            container.innerHTML = '';
+
+            let i = 0;
+            const text = node.dialogue;
+            let isTag = false;
+            let tagContent = '';
+
+            // 타이핑
+            function type() {
+                if(i < text.length) {
+                    let char = text.charAt(i);
+                    if(char === '<') {
+                        isTag = true;
+                        tagContent = '<';
+                        i++;
+                        type();
+                        return;
+                    }
+                    if(isTag) {
+                        tagContent += char;
+                        if(char === '>') {
+                            isTag = false;
+                            diagEl.innerHTML += tagContent;
+                            tagContent = '';
+                        }
+                        i++;
+                        type();
+                        return;
+                    }
+                    diagEl.innerHTML += char;
+                    i++;
+                    
+                    let delay = 20 + Math.random() * 20;
+                    if (char === '.' || char === '?' || char === '!') delay = 150;
+                    else if (char === ',') delay = 80;
+
+                    typeTimeout = setTimeout(type, delay);
+                } else {
+                    diagEl.classList.remove('typing-cursor');
+                    renderChoices(node.choices, container);
+                }
+            }
+            
+            // 설명(지문)을 먼저 즉시 보여주고, 대사는 타이핑되도록 연출
+            if (node.getDesc) {
+                descEl.innerHTML = node.getDesc();
+                descEl.classList.add('show-desc');
+            }
+            type();
+        }
+
+        function renderChoices(choices, container) {
+            choices.forEach((c, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn reveal-btn' + (c.danger ? ' danger-choice' : '');
+                btn.style.animationDelay = (idx * 0.1) + "s";
+                
+                const textSpan = document.createElement('span');
+                textSpan.innerText = c.text;
+                btn.appendChild(textSpan);
+                
+                btn.onclick = () => {
+                    const stamp = document.getElementById('stamp-action');
+                    
+                    stamp.innerText = c.danger ? 'DENIED' : 'ACCEPTED';
+                    stamp.className = c.danger ? 'stamp-hit' : 'stamp-hit stamp-blue';
+                    
+                    setTimeout(() => {
+                        stamp.className = '';
+                        c.action();
+                    }, 400); 
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderEnding(node) {
+            const overlay = document.getElementById('end-overlay');
+            overlay.style.display = 'flex';
+            setTimeout(() => { overlay.style.opacity = '1'; }, 50);
+
+            const title = document.getElementById('end-title');
+            const dialogue = document.getElementById('end-dialogue');
+            const result = document.getElementById('end-result');
+            const btnContainer = document.getElementById('end-button-container');
+            
+            // 엔딩 오버레이 띄울 때도 내부 스크롤 영역을 맨 위로 초기화
+            const endingContent = document.getElementById('ending-content');
+            if (endingContent) {
+                endingContent.scrollTop = 0;
+            }
+
+            title.innerText = node.title;
+            // 지문이 담긴 result를 먼저, 그 아래에 생동감 있는 대사(dialogue)를 출력
+            result.innerHTML = node.result;     
+            dialogue.innerHTML = node.dialogue;
+
+            if(node.isError) {
+                title.style.color = "var(--ink-red)";
+                title.classList.add('end-glitch'); 
+            } else if(node.endingType === 'LIBERATION') {
+                title.style.color = "#e0d5c1"; 
+            } else {
+                title.style.color = "#8a7b6e"; 
+            }
+
+            setTimeout(() => {
+                const restartBtn = document.createElement('button');
+                restartBtn.className = 'reboot-btn' + (node.isError ? ' reboot-danger' : '');
+                
+                if(node.isError) {
+                    restartBtn.innerText = "SYSTEM REBOOT [시스템 포맷 중...]";
+                } else {
+                    restartBtn.innerText = ">> 배달 업무 재할당 (REBOOT)";
+                }
+
+                restartBtn.onclick = () => restartGame();
+                btnContainer.appendChild(restartBtn);
+            }, 2500); 
+        }
+
+        function restartGame() {
+            const overlay = document.getElementById('end-overlay');
+            const cover = document.getElementById('cover-screen');
+            const clipboard = document.getElementById('clipboard-frame');
+            const btnContainer = document.getElementById('end-button-container');
+
+            overlay.style.opacity = '0';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                btnContainer.innerHTML = ''; 
+
+                clipboard.style.display = 'none';
+                cover.style.display = 'flex';
+                
+                setTimeout(() => { cover.style.opacity = '1'; }, 50);
+
+                state = { sync: 50, integrity: 50, trace: 0, lastNode: null };
+                document.getElementById('val-sync').innerHTML = '50';
+                document.getElementById('val-int').innerHTML = '50';
+                document.getElementById('val-trace').innerHTML = '0';
+                document.getElementById('val-trace').classList.remove('threat-alert');
+            }, 800);
+        }
+
+        window.onload = () => {
+            // 게임은 표지 화면에서 시작
+        };
+    </script>
+</body>
+</html>
