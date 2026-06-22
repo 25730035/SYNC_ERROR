@@ -185,6 +185,9 @@
 
         .header-title { flex: 1; display: flex; flex-direction: column; align-items: center; } 
         .header-title h1 { font-size: 2rem; letter-spacing: 5px; color: var(--ink-red); margin: 0; font-weight: 900; white-space: nowrap; }
+        #home-title-btn { cursor: pointer; transition: all 0.2s ease; }
+        #home-title-btn:hover { color: var(--ink-black); text-shadow: 0 0 15px rgba(224, 213, 193, 0.5); transform: scale(1.03); }
+        #home-title-btn:active { transform: scale(0.97); }
         .header-title p { font-size: 0.8rem; font-weight: bold; letter-spacing: 2px; color: var(--ink-gray); margin-top: 5px; }
         
         .header-meta { flex: 1; text-align: right; font-size: 0.75rem; color: var(--ink-gray); font-weight: bold; line-height: 1.4; }
@@ -459,7 +462,7 @@
                 <div id="main-header">
                     <div class="header-barcode">|||| || ||| | ||</div>
                     <div class="header-title">
-                        <h1>[ SYNC_ERROR ]</h1>
+                        <h1 id="home-title-btn" onclick="restartGame()" title="처음 화면으로 돌아가기">[ SYNC_ERROR ]</h1>
                         <p>COURIER LOG // ARCHIVE</p>
                     </div>
                     <div class="header-meta">
@@ -550,7 +553,7 @@
                 title: 'ROUTE_S1 : 기억 과부하', 
                 img: 'media/S1.mp4', 
                 dialogue: '<span class="dialogue-speaker">[운반자 "에코"]</span><br>"계속 들려… 누군가 내 머릿속에서 속삭이고 있어."<br><br><span class="dialogue-speaker" style="color:var(--ink-red);">[시스템 음성]</span><br>"SYNC RATE 불안정. 외부 기억 파편 감지."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"아니야… 이 기억은 배송 목록에 없었어. 이건… 내 기억이 아니야. 기억은 소유가 아니라 동기화될 뿐이다."', 
-                getDesc: () => "의 저주낡은 지하 데이터 환승소는 숨이 막힐 만큼 차갑다. 천장 깊숙한 곳에서 돌아가는 냉각 팬파 진동이 바닥의 금속 패널까지 미세하게 떨리게 만든다. 공기에는 오래된 회로가 타들어간 냄새와 금속성 먼지가 뒤섞여 있고, 벽면을 따라 흐르는 푸른 홀로그램 광고들은 신호 불량 때문에 몇 초 간격으로 깜빡이며 공간 전체를 불안정한 청색 빛으로 물들인다.<br><br>복도 끝에는 폐기된 기억 저장 장치들이 산처럼 쌓여 있다. 깨진 메모리 캡슐 조각 위로 희미한 전류가 튀고, 누군가 급하게 버린 데이터 케이블이 바닥을 뱀처럼 기어간다. 바닥에는 오래전 유출된 냉각수가 얼룩처럼 말라붙어 있고, 발걸음을 옮길 때마다 축축한 금속 마찰음이 낮게 울린다.<br><br>운반자 \"에코\"는 어깨에 매달린 기억 운송 가방을 조심스럽게 내려놓는다. 그는 장갑 낀 손으로 가방 표면에 내려앉은 먼지를 천천히 털어낸다. 손끝이 닿을 때마다 붉은 경고 문양이 미세하게 점멸한다. 그의 숨결은 차가운 공기 속에서 희미한 김으로 번지고, 피곤하게 젖은 눈동자는 복도 끝에서 깜빡이는 데이터 표시등을 응시한다. 멀리서 불규칙하게 울리는 시스템 경고음. 누군가 오래전 남긴 음성 로그가 잡음 섞인 채 반복 재생된다. 에코는 차갑게 식은 철제 벽에 등을 기댄다. 벽 너머를 흐르는 냉각 파이프의 진동이 척추를 타고 전해진다. 그는 눈을 감았다 뜨며 머리를 움켜쥔다.",
+                getDesc: () => "거대한 서버 랙들이 내뿜는 차가운 기계음과 붉은 경고등이 사방에서 점멸하는 통제 구역. 에코는 무거운 공기 속에 멈춰 선 순간, 뇌리를 짓이기는 듯한 극심한 기억 과부하를 마주한다. 숨조차 쉬지 못하고 검은 가죽 장갑을 낀 두 손으로 머리를 강하게 움켜쥐며 고개를 뒤틀어 괴로워하는 그녀의 관자놀이와 눈가에서, 푸른색 고전압 전류 스파크가 거칠게 사방으로 방전된다. 시야가 온통 디지털 노이즈로 마비되어 가는 순간이다.<br><br>거친 기계식 냉각팬 소음과 고전압 스파크의 찌릿한 파열음, 그리고 에코의 거친 숨소리만이 구역 전체에 낮게 울린다.",
                 choices: [
                     { text: "전달 강행 (Sync-10, Int-5, Trace+5)", action: () => { updateStats(-10, -5, 5); loadScene('S2'); } }, 
                     { text: "전달 중단 (Sync+5, Int+5, Trace-5)", action: () => { updateStats(5, 5, -5); loadScene('S3'); } }
@@ -560,7 +563,7 @@
                 title: 'ROUTE_S2 : 불법 거래', 
                 img: 'media/S2.mp4', 
                 dialogue: '<span class="dialogue-speaker" style="color:#a87a51;">[기억 브로커 "블랭크"]</span><br>"사람들은 기억을 사랑한다고 말하지만, 결국은 고통 없는 버전만 원해."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"넌 사람 기억을 상품처럼 다루는군."<br><br><span class="dialogue-speaker" style="color:#a87a51;">[기억 브로커 "블랭크"]</span><br>"상품? 아니. 난 사람들이 버린 조각들을 주워 이어 붙일 뿐이야. 기억은 교환 가능하다. 단, 너 자신을 담보로. 비어있는 부분… 채워줄까?"', 
-                getDesc: () => "어두운 뒷골목의 한 구석, 공기 중에 습기와 그을린 기판의 냄새가 섞여 있다. 희미한 조명 속에서 기억 브로커 \"블랭크\"의 홀로그램 장치가 흔들리며 지지직거리는 소음을 낸다. 실체가 없는 그녀의 이미지는 연기처럼 일렁이지만, 그 눈빛만큼은 기괴할 정도로 형형하다. 그녀는 손끝으로 정체불명의 기억 정제 큐브를 굴리고 있다. 푸른색 광원이 돌 때마다 그녀의 얼굴에 차가운 그림자가 졌다가 사라진다.<br><br>운반자 \"에코\"는 그녀가 내미는 큐브를 바라본다. 가공된 타인의 기억들이 큐브 내부에서 은하수처럼 요동치고 있다. 그것을 받아들이면 텅 빈 머릿속의 고통은 멈추겠지만, 그 대가로 지불해야 할 코어의 안전성에 대한 경고음이 그의 보조 안경 너머에서 조용히 깜빡인다.",
+                getDesc: () => "네온사인의 잔영이 바닥의 물웅덩이에 흐릿하게 번지는 음산한 뒷골목, 뺨을 타고 흘러내리는 장대비는 차갑기만 하다. 기괴한 방독면 너머로 안광을 빛내는 브로커 블랭크가 에코의 앞을 가로막고, 천천히 자신의 낡은 코트 안자락을 열어젖힌다. 그 안감에는 어둠을 밝히는 보라색 불법 기억 정제 큐브들이 가득 박힌 채 기묘하게 빛나고 있다. 에코는 빗물에 젖은 검은 장갑 낀 손을 조심스럽게 뻗으며, 금기시된 타인의 기억 조각들이 뿜어내는 광채에 홀린 듯 시선을 빼앗긴다.<br><br>둔탁하게 쏟아지는 장대비 소리와 물웅덩이를 밟는 군화 소리 사이로, 큐브가 미세하게 공명하는 저음의 웅웅거림이 끊임없이 새어 나온다.",
                 choices: [
                     { text: "거래 수락 (Sync+15, Int-20, Trace+10)", action: () => { updateStats(15, -20, 10); loadScene('S4'); } }, 
                     { text: "거래 거부 (Sync+5, Int-5, Trace-5)", action: () => { updateStats(5, -5, -5); loadScene('S3'); } }
@@ -570,7 +573,7 @@
                 title: 'ROUTE_S3 : 분실된 화물', 
                 img: 'media/S3.mp4', 
                 dialogue: '<span class="dialogue-speaker" style="color:var(--ink-gray);">[데이터 잔존체]</span><br>"난 분명 누군가에게 필요했어… 그런데 왜 아무도 날 기억하지 못하지?"<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"삭제된 기억은 기록에도 남지 않아."<br><br><span class="dialogue-speaker" style="color:var(--ink-gray);">[데이터 잔존체]</span><br>"그럼 난 이미 죽은 건가? 기억되지 않으면 존재하지 않는다... 나를 지운 건 누구지?"', 
-                getDesc: () => "도시의 거대한 배수구와 쓰레기 매립지가 교차하는 황량한 구역. 천장 전선에서 떨어진 알칼리성 물방울이 고철 더미 위로 규칙적인 소리를 내며 떨린다. 버려진 구형 안드로이드 바디와 불타버린 메모리 칩들이 진흙 속에 반쯤 묻혀 있다. 그 쓰레기산 한가운데에서 파란 노이즈로 구성된 인간 형태의 실루엣이 왜곡되며 흔들린다. 그것은 이름도, 고향도 잃어버린 채 네트워크 서버에서 누락되어 버려진 잔존 데이터다.<br><br>에코가 다가가자 그 형체는 비명을 지르듯 주파수를 무작위로 변경하며 떨린다. 흩어지는 빛의 입자들 사이로 슬픔과 억울함이라는 순수한 감정 주파수가 에코의 수신기에 강제로 동기화된다. 이 데이터를 가방에 담아 통제국에 반납할지, 아니면 가만히 그의 마지막 절규를 들어줄지 결정해야 한다.",
+                getDesc: () => "버려진 고철과 구형 메인보드들이 산을 이룬 황량한 폐기장 한복판. 에코는 흙바닥에 거칠게 무릎을 꿇은 채, 붉은 전류가 간헐적으로 흐르는 회로 기판들을 양손으로 미친 듯이 헤집기 시작한다. 다급하게 얽힌 전선 뭉치를 붙잡고 뜯어내는 과정에서 날카로운 금속 파편이 그녀의 살점을 파고들고, 손등과 손목을 타고 붉은 피가 배어 나오지만 에코는 고통조차 잊은 채 거친 숨을 몰아쉬며 부서진 부품들을 필사적으로 움켜쥘 뿐이다.<br><br>날카로운 금속이 긁히는 소리와 헐떡이는 숨소리, 전선이 끊어지는 투둑 소리가 어지럽게 뒤섞인다.",
                 choices: [
                     { text: "공감 (Sync+10, Int+5, Trace-5)", action: () => { updateStats(10, 5, -5); if(state.integrity >= 40) loadScene('S6'); else loadScene('S4'); } }, 
                     { text: "무시 (Sync+5, Int-10, Trace+5)", action: () => { updateStats(5, -10, 5); loadScene('S4'); } }
@@ -580,7 +583,7 @@
                 title: 'ROUTE_S4 : 감시망 작동', 
                 img: 'media/S4.mp4', 
                 dialogue: '<span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"도주 경로 분석 완료. 생존 확률 3.2%."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"확률 따위로 인간을 계산하지 마."<br><br><span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"인간은 이미 계산 가능한 패턴으로 분류되었습니다. 규칙 위반자가 감지되었습니다. 기억 보존 법칙에 따라 파기 프로토콜을 실행합니다."', 
-                getDesc: () => "공중에서 날카로운 기계음이 고막을 찢는다. 골목 안쪽 벽면들이 일시에 밝은 붉은색 감시등으로 물들며, 통제국의 드론들이 회전익 소음을 내며 강하한다. 붉은색 스캔 레이저 격자들이 격렬하게 교차하며 에코의 움직임을 제한한다. 벽면에 설치된 외부 스피커를 통해 기계적으로 복제된 통제국 오버시어의 경고음이 울려 퍼진다.<br><br>도망치기 위해 전력을 다해 달려야 하는 순간이다. 시스템 방화벽을 강제로 돌파할 것인가, 아니면 이 차가야 할 기계적 신호들과 정면으로 대면하여 오류를 논리적으로 무마할 것인가.",
+                getDesc: () => "사방을 촘촘하게 메운 붉은색 격자 레이저 감시망이 사나운 경고음을 내뿜는 통로. 에코는 심장이 터질 듯한 공포 속에서 전속력으로 질주한다. 공포에 질린 얼굴로 뒤를 돌아보는 순간, 복도 끝 거대한 허공을 가득 채우며 차가운 감시의 눈빛을 빛내는 오버시어의 홀로그램이 신처럼 강림한다. 전방의 방화벽에서 치명적인 푸른색 레이저 빔이 교차하며 그녀를 가로막자, 에코는 속도를 줄이지 않고 바닥 위로 몸을 던져 슬라이딩하며 간발의 차로 죽음의 덫을 통과한다.<br><br>귀를 찢는 사이렌 소리와 급박한 발소리, 레이저가 지지지직거리는 위협적인 사운드가 통로 전체를 뒤흔든다.",
                 choices: [
                     { text: "도망 (Sync-5, Trace+40)", danger: true, action: () => { updateStats(-5, 0, 40); loadScene('S5'); } }, 
                     { text: "대면 (Int-15, Trace+10)", action: () => { updateStats(0, -15, 10); loadScene('S6'); } }
@@ -590,7 +593,7 @@
                 title: 'ROUTE_S5 : 화물 파기', 
                 img: 'media/S5.mp4', 
                 dialogue: '<span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"고통은 비효율적입니다. 삭제 후 안정성이 향상됩니다."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"고통까지 지우면… 남는 게 뭐지?"<br><br><span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"침묵. 그리고 안정. 고통은 제거할 수 있습니다. 불필요한 데이터를 삭제하시겠습니까?"', 
-                getDesc: () => "통제국의 무감각한 백색 수술실 같은 정화 코어실 내부. 바닥은 소독약 냄새가 나고 방 중앙에는 거대한 구형 데이터 추출기가 공중에 뜬 채 푸르게 회전하고 있다. 기계 암(Arm)들이 에코의 머리 장치에 다가와 연결 핀을 무자비하게 꽂아 넣는다. 전극이 닿자 자아를 흐리게 만드는 고주파 소음이 그의 뇌파를 덮치기 시작한다.<br><br>오버시어의 제안은 달콤하다. 타인의 고통스러운 기억뿐만 아니라, 당신이 품어온 자아의 의구심마저 깨끗이 청소해 주겠다는 논리적인 유혹이다. 지우면 안전해지지만, 그 끝에는 무엇이 남을지 모른다.",
+                getDesc: () => "현실감이 거세된 지독한 화이트 노이즈의 방, 에코는 두 손으로 무거운 기계식 메탈 큐브를 감싸 쥔 채 차가운 바닥에 주저앉아 있다. 그녀가 슬픈 눈빛으로 화물을 내려다보는 순간, 고정되어 있던 데이터가 격렬하게 요동치며 신비로운 푸른빛의 디지털 입자로 변해 허공으로 흩어지기 시작한다. 큐브뿐만 아니라 그것을 쥐고 있는 에코의 손끝마저 푸른 픽셀 조각으로 바스러지며, 소중했던 화물은 흔적도 없이 증발하듯 무너져 내린다.<br><br>거친 주파수의 화이트 노이즈와 입자가 바스러지는 모래 같은 디지털 소음만이 방 안을 가득 채운다.",
                 choices: [
                     { text: "삭제 (Sync+20, Int-10, Trace-5)", action: () => { updateStats(20, -10, -5); state.lastNode = 'S5'; loadScene('S7'); } }, 
                     { text: "유지 (Int+10, Trace+5)", action: () => { updateStats(0, 10, 5); state.lastNode = 'S5'; loadScene('S7'); } }
@@ -600,7 +603,7 @@
                 title: 'ROUTE_S6 : 시스템 침투', 
                 img: 'media/S6.mp4', 
                 dialogue: '<span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"너는 원본이 아니다. 복제된 감정 패턴에 불과하다."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"그렇다 해도 지금 느끼는 이 공포는 진짜야."<br><br><span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"감정 역시 재현 가능합니다. 이 시스템은 진실을 숨긴다… 너는 조작된 기억이야."', 
-                getDesc: () => "시스템 터미널의 지하 백도어 통로. 보안 요원들이 순찰하는 메인 데이터 파이프라인의 이면이다. 어두운 통로에는 고전압 전선들이 얽혀 있고 녹색 서버 인디케이터만 불안정하게 점멸하고 있다. 에코는 해킹 장치를 터미널 포트에 꽂아 넣는다. 순식간에 암호화된 파일들이 복호화되며 눈앞에 쏟아져 나온다.<br><br>자신이 날랐던 수많은 기억 중 상당수가 실존했던 이들의 흔적이 아니라 시스템의 필요에 의해 임의로 주입된 거짓 데이터들이었음을 알게 된다. 심지어 에코 본인의 가장 오래된 유년기의 추억마저도. 이 가혹한 조작 파일을 시스템에 협력하며 기밀로 묻어둘 것인가, 거부할 것인가.",
+                getDesc: () => "통제국의 삼엄한 백도어 통로, 차가운 벽면에 몸을 바짝 밀착시킨 에코의 숨소리가 가쁘다. 그녀는 한 손으로 벽을 지탱한 채, 다른 한 손에 쥔 고주파 용접 토치를 두꺼운 전선 파이프라인에 가져다 댄다. 기계가 가동되며 사방으로 강렬한 백색 스파크와 불꽃이 폭죽처럼 튀는 위험천만한 상황 속에서도 에코는 매서운 눈빛으로 벽면을 노려본다. 경고등이 붉게 깜빡일 때마다, 땀에 젖은 그녀의 목덜미에 선명하게 새겨진 피실험체 코드 '에코' 낙인이 잔혹하도록 차갑게 드러난다.<br><br>용접 토치의 고주파 지이잉 소리와 사방으로 튀는 불꽃의 타닥거리는 파열음이 끊임없이 이어진다.",
                 choices: [
                     { text: "협력 (Sync+5, Trace+15)", danger: true, action: () => { updateStats(5, 0, 15); state.lastNode = 'S6'; loadScene('S7'); } }, 
                     { text: "거부 (Int+10, Trace-5)", action: () => { updateStats(0, 10, -5); state.lastNode = 'S6'; loadScene('S7'); } }
@@ -609,8 +612,8 @@
             'S7': { 
                 title: 'ROUTE_S7 : 자아 충돌', 
                 img: 'media/S7.mp4', 
-                dialogue: '<span class="dialogue-speaker" style="color:var(--ink-gray);">[또 다른 에코]</span><br>"넌 살아남기 위해 기억을 믿고 있을 뿐이야."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"아니… 난 적어도 내가 선택했다고 믿고 싶어."<br><br><span class="dialogue-speaker" style="color:var(--ink-gray);">[또 다른 에코]</span><br>"그 선택조차 입력된 것이라면?"<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"내가 누군가의 기억일 뿐이라면… 나는 과연 진짜인가?"', 
-                getDesc: () => "에코의 헤드셋 모니터가 지지직거리며 좌우로 일그러진다. 그의 시야에 서로 다른 두 개의 풍경이 겹친다. 하나는 따뜻한 비가 내리는 가을의 공원이고, 다른 하나는 온통 백색 강철로 이루어진 차가운 공장 조립 라인이다. 두 기억 모두 생생한 통각과 감정을 동반하여 에코의 이성을 공격한다.<br><br>자신의 뇌에 주입된 데이터와 본래 영혼의 무결성 간의 간극을 견디지 못하고 그의 코어 온도가 급격히 상승한다. 경고 주파수가 귓가를 강타하는 가운데, 깨진 기억을 온전한 나의 일부로 수용할지 혹은 모든 거짓 데이터를 차갑게 부정해 버릴지 선택해야 한다.",
+                dialogue: '<span class="dialogue-speaker">[운반자 "에코"]</span><br><span style="font-style:italic; color:var(--ink-gray);">"…나는 살아남기 위해 이 기억을 믿고 있는 걸지도 몰라."</span><br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"아니… 난 적어도 내가 선택했다고 믿고 싶어."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br><span style="font-style:italic; color:var(--ink-gray);">"…그 선택조차, 입력된 것이라면?"</span><br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"내가 누군가의 기억일 뿐이라면… 나는 과연 진짜인가?"', 
+                getDesc: () => "끝을 알 수 없는 어두운 디지털 격자 공간 속, 에코가 온몸에 청록색 전술 슈트 빛을 흘리며 서 있다. 평온함도 잠시, 카메라가 그녀의 얼굴을 익스트림 클로즈업하자 눈동자가 미세하게 떨리고 호흡이 거칠어진다. 자신의 뇌에 주입된 가짜 데이터와 본래 영혼의 무결성 간의 간극을 견디지 못하고 그녀의 코어 온도가 180°C를 돌파하며 급격히 상승하기 시작한다. 망막 뒤편이 검붉은 노이즈로 물들며 고막을 찢을 듯한 경고 주파수가 귓가를 강타한다. 그 순간, 에코의 등 뒤로 가상 현실의 공간 전체가 거대한 거울처럼 무참하게 와장창 깨져 나가며 강렬한 푸른색 방사형 광선이 사방으로 폭발한다. 극심한 자아 붕괴의 고통을 견디지 못한 에코가 고개를 뒤로 젖히며 하늘을 향해 처절한 비명을 지른다. 비명과 동시에 그녀의 신체는 주입된 데이터(적색)의 허상과 본래 영혼(청색)의 무결성으로 기괴하게 양분되어, 두 개의 실루엣이 엇갈린 채 동시에 비명을 지르는 시각적 분열을 일으킨다. 사방으로 파편화되어 휘날리는 깨진 기억 조각들 사이로, 두 자아가 서로를 부정하듯 격렬하게 충돌한다. 이 지독한 감각의 소용돌이 속에서 그녀는 이 깨진 기억마저 온전한 나의 일부로 수용할지, 혹은 모든 거짓 데이터를 차갑게 부정해버릴지 생사의 선택을 내려야만 한다. 화면은 이내 레드와 블루의 이진법 코드 스트림이 폭포수처럼 쏟아지는 광속의 디지털 터널 속으로 무섭게 빨려 들어가며 동기화 에러의 정점을 찍는다.",
                 choices: [
                     { text: "수용 (Sync+20, Int-10, Trace+5)", action: () => { updateStats(20, -10, 5); loadScene('S8'); } }, 
                     { text: "부정 (Int+10, Trace-5)", action: () => { updateStats(0, 10, -5); loadScene('S8'); } }
@@ -620,7 +623,7 @@
                 title: 'ROUTE_S8 : 최종 판정', 
                 img: 'media/S8.mp4', 
                 dialogue: '<span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"당신은 규칙을 수차례 위반했습니다."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"그래도 난 기억을 버리지 않았어."<br><br><span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br>"비효율적인 감정적 집착 확인. 모든 데이터가 수집되었습니다. 당신의 존재 가치를 심사합니다."<br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br>"그게 인간이라는 증거다."', 
-                getDesc: () => "모든 소음이 사라진 무의 공간. 거대한 심판의 눈이 에코를 내려다본다.<br><br>에코의 머릿속에 그동안 거쳐온 모든 노드의 기억이 파노라마처럼 빠르게 역재생된다.<br>배달. 도망. 거짓. 고통. 그리고 희미한 인간성.<br>운반자 \"에코\"는 눈을 감고 천천히 숨을 들이마신다. 차갑고 무거운 공기가 폐 깊숙이 스며든다.<br>잠시 뒤, 그는 조용히 고개를 든다.",
+                getDesc: () => "모든 시스템 연산이 한계 수치에 도달하고, 에코의 눈앞에 거대한 심판의 단말기 인터페이스가 유령처럼 떠오른다. 통제국이 주입한 거짓 기억과, 영혼 깊은 곳에서 끝내 저항하던 진짜 감정이 격렬하게 충돌하며 그녀의 생체 신호 그래프가 위험 수위까지 치솟는다. 에코는 가쁘게 몰아쉬던 숨을 천천히 고르고 고개를 들어 오버시어의 눈을 똑바로 응시한다. 이제 그녀의 육체와 영혼의 운명을 결정지을 마지막 코어 판정이 시작되려 한다.<br><br>심장 박동 모니터의 빨라지는 경고음과, 거대한 연산 장치가 돌아가는 위압적인 저음이 공간을 무겁게 짓누른다.",
                 choices: [
                     { text: "판정 수용 (운명에 맡긴다)", action: () => { if (state.sync >= 80 && state.integrity >= 60) loadScene('E1'); else loadScene('E2'); } }, 
                     { text: "시스템 저항 (통제 거부)", danger: true, action: () => { if (state.trace >= 60) loadScene('E3'); else loadScene('E2'); } }
@@ -630,15 +633,15 @@
                 title: 'FINAL_DELIVERY: 해방',
                 img: 'media/E1.mp4', 
                 dialogue: '<span class="dialogue-speaker" style="color:var(--ink-black);">[운반자 "에코"]</span><br><span style="color:var(--ink-black);">"처음으로… 아무 명령도 들리지 않아."</span><br><br><span class="dialogue-speaker" style="color:var(--ink-gray);">[희미한 시스템 잔향]</span><br><span style="color:var(--ink-gray);">"SYNC CONNECTION LOST."</span><br><br><span class="dialogue-speaker" style="color:var(--ink-black);">[운반자 "에코"]</span><br><span style="color:var(--ink-black);">"그래. 이제야 진짜 조용하네."<br><br>"더 이상 누구의 기억도, 도구도 아니다. 나는 온전한 나로서 존재한다."</span>', 
-                result: "배달. 도망. 거짓. 고통. 그리고 가슴속 가장 어두운 곳에 파묻혀 숨 쉬던 희미한 인간성.<br>운반자 \"에코\"는 눈을 감고 천천히 숨을 들이마신다. 회로가 타들어 가던 고약한 냄새 대신, 비 갠 뒤 새벽녘의 은은하고 무거운 밤공기가 폐 깊숙이 아프게 퍼져 나간다. 잠시 뒤, 그는 조용히 고개를 든다.<br><br>붕괴하던 시스템의 소음이 서서히 멈춘다.<br>붉게 점멸하던 경고등은 하나둘 꺼지고, 회색 안개 속으로 희미한 자연광이 스며든다. 처음으로 이 공간에 따뜻한 색이 들어온다.<br>운반자 \"에코\"는 무너진 플랫폼 가장자리에 서서 멀리 펼쳐진 도시를 바라본다. 도시 위를 뒤덮던 감시 홀로그램은 사라지고, 침묵만이 남아 있다.<br>그는 천천히 기억 운송 가방을 내려놓는다.<br>손끝이 가방에서 떨어지는 순간, 오래된 속박이 끊어진 듯 그의 표정이 미세하게 풀린다.<br><br>차가운 바람이 불어와 그의 옷자락을 흔든다.<br>멀리서 새벽빛이 도시를 비추기 시작한다.<br><br><br><strong style='color:#ffffff; font-size:1.4rem; text-shadow: 0 0 20px rgba(255,255,255,0.6);'>[ 결과: 당신은 중앙 네트워크의 억압적인 굴레를 파괴하고 온전한 자아를 지닌 지평선 너머로 마침내 해방되었습니다. ]</strong>", 
+                result: "화면 전체를 가로막고 있던 거미줄 형상의 디지털 방화벽이 요란한 파열음과 함께 유리가 깨지듯 산산조각 나며 허공으로 흩날린다. 거대한 게이트가 열리는 순간, 에코는 메탈 백팩을 바닥으로 거칠게 내던지며 가쁜 숨을 가라앉힌다. 사방을 압도하는 매끄러운 기계음 소리를 뒤로한 채, 그녀는 눈앞에 펼쳐진 눈부신 백색 광채의 통로를 향해 거침없이 발을 내딛는다. 구형 파편들을 짓밟는 군화 소리만이 복도에 울려 퍼지고, 그녀의 눈빛에는 마침내 통제국의 사슬을 끊어내고 자아를 찾아낸 자의 압도적인 결연함이 서린다.<br><br>방화벽이 와장창 깨지는 날카로운 사운드와 쿵 하고 백팩이 떨어지는 둔탁한 소리, 그리고 뚜벅뚜벅 멀어지는 단호한 군화 발소리만이 복도에 메아리친다.<br><br><br><strong style='color:#ffffff; font-size:1.4rem; text-shadow: 0 0 20px rgba(255,255,255,0.6);'>[ 결과: 당신은 중앙 네트워크의 억압적인 굴레를 파괴하고 온전한 자아를 지닌 지평선 너머로 마침내 해방되었습니다. ]</strong>", 
                 isEnding: true,
                 endingType: 'LIBERATION'
             },
             'E2': { 
                 title: 'FINAL_DELIVERY: 잔존',
                 img: 'media/E2.mp4', 
-                dialogue: '<span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br><span style="color:var(--ink-red);">"개체 K-07. 시스템 보조 프로세스로 재분류합니다. 저항 기록 삭제 예정. 결국 부품은 교체될 뿐입니다. 시스템의 안정이 최우선입니다."</span><br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br><span style="color:var(--ink-gray);">"…난 아직 끝나지 않았어."</span>', 
-                result: "배달. 도망. 거짓. 고통. 소멸의 공포 속에서 매달렸던 희미한 영혼의 흔적.<br>운반자 \"에코\"는 눈을 부릅뜬 채 최후의 조각을 붙잡으려 하지만, 이미 그의 코어 내부 깊숙한 곳에서부터 차가운 침묵이 흘러나온다. 머릿속의 모든 기억들이 빠른 속도로 암전되며, 생각의 물줄기가 단절되기 시작한다.<br><br>빛바랜 양피지 서류철처럼 아스라이 흔들리던 에코의 자아는 시스템의 가혹한 복구 명령에 의해 다시 지워지기 시작한다. 드론들의 지직거리는 회전 날개 소리가 희미해지고, 그의 시야는 완전히 어두운 단말기 화면 속의 차가운 텍스트 라인으로 수렴해 간다. 한때 존재했던 흔적은 데이터 아카이브의 꼬리표로만 분류되어 차가운 철제 서랍 깊은 곳으로 미끄러져 들어간다.<br><br><strong style='color:#8a7b6e; font-size:1.4rem; text-shadow: 0 0 10px rgba(138,123,110,0.4);'>[ 결과: 온전한 자아를 규명해 내지 못한 채, 당신의 모든 경험과 생각은 규격화되어 시스템 백그라운드의 부품으로 영원히 흡수·잔존합니다. ]</strong>", 
+                dialogue: '<span class="dialogue-speaker" style="color:var(--ink-red);">[통제국 "오버시어"]</span><br><span style="color:var(--ink-red);">"개체 에코. 시스템 보조 프로세스로 재분류합니다. 저항 기록 삭제 예정. 결국 부품은 교체될 뿐입니다. 시스템의 안정이 최우선입니다."</span><br><br><span class="dialogue-speaker">[운반자 "에코"]</span><br><span style="color:var(--ink-gray);">"…난 아직 끝나지 않았어."</span>', 
+                result: "견고하던 서버 룸의 바닥이 거대한 기계식 보이드(Void)처럼 열리며 에코의 몸이 수직의 나선형 터널 속으로 급강하한다. 끝없는 추락의 공포 속에서 사방의 제어 모니터들이 일제히 핏빛으로 돌변하더니, 'FATAL ERROR'라는 치명적 오류 경고를 광기 어린 불빛으로 뿜어낸다. 고막을 찢는 비상 경보음 속에서 에코는 허공을 향해 절망적인 비명을 지르지만, 강제 정화 프로토콜에 붙잡힌 그녀의 사지는 이미 붉은색 디지털 블록과 픽셀 조각으로 산산조각 나며 어둠 속으로 완전히 증발해 사라진다.<br><br>바닥이 열리는 거대한 기계 개폐음과 에코의 처절한 비명소리, 그리고 에러 경보의 날카로운 굉음이 한꺼번에 뒤섞여 울려 퍼진다.<br><br><br><strong style='color:#8a7b6e; font-size:1.4rem; text-shadow: 0 0 10px rgba(138,123,110,0.4);'>[ 결과: 온전한 자아를 규명해 내지 못한 채, 당신의 모든 경험과 생각은 규격화되어 시스템 백그라운드의 부품으로 영원히 흡수·잔존합니다. ]</strong>", 
                 isEnding: true 
             },
             'E3': { 
